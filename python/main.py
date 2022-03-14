@@ -3,6 +3,8 @@
 # encoding:utf-8
 import ctypes
 import ctypes.wintypes
+from queue import Empty
+import win32gui
 
 from PySide2 import QtCore
 from PySide2 import QtGui
@@ -22,6 +24,7 @@ class Window(QtWidgets.QWidget):
         self.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
         #タスクバーに表示されない/タイトルバーの削除/常に画面の前面にある
         self.setWindowFlags(QtCore.Qt.Tool|QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowStaysOnTopHint)
+        #ウィンドウをフルスクリーンより前にもってくる
         #ウィンドウハンドルをメモ帳に指定
         self.handle = self.__get_handle("ELDEN RING")
 
@@ -48,11 +51,20 @@ class Window(QtWidgets.QWidget):
 
         self.setStyleSheet("background-color: rgba(233, 0, 0, 128);")
 
-        self.showMaximized()
+        self.installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        # アクティブでなくなった時
+        if event.type() == QtCore.QEvent.WindowDeactivate:
+            self.activateWindow()
+             
+        # フォーカスが外れた時
+        elif event.type() == QtCore.QEvent.FocusOut:
+            self.activateWindow()
 
     @staticmethod
     #ウィンドウハンドルを返す
-    def __get_handle(process_name):
+    def __get_handle(process_name):        
         return user32.FindWindowW(0, process_name)
     #指定されたウィンドウにリサイズする
     def __windows_resize(self):
@@ -95,8 +107,7 @@ if __name__ == "__main__":
     trayicon.show()
 
     window = Window()
-
+    window.show()
 
     exit_code = app.exec_()
-
     exit(exit_code)
