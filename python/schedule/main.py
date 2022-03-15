@@ -4,6 +4,8 @@ import time
 import os.path
 
 from getScheduledStartTime import getScheduledStartTime
+from profileManeger import loadProfile
+from taskListManeger import updateTaskList
 
 
 def main():
@@ -35,9 +37,12 @@ def main():
             else:
                 print('checkBoxListener == False')
 
-
             # Update List
+            game_title = "Apex"
+            updatedTaskList = updateTaskList(remainSec, game_title)
+
             # Show List
+            print(updatedTaskList)
 
         # 表示切替OFF
         else:
