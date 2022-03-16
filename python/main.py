@@ -15,16 +15,6 @@ user32 = ctypes.windll.user32
 # https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
 DWMWA_EXTENDED_FRAME_BOUNDS = 9
 
-
-
-# QScrollAreaの中身
-class InnerWidget(QtWidgets.QWidget):
-    def __init__(self, *args, **kwargs):
-        super(InnerWidget, self).__init__(*args, **kwargs)      
-        taskLayout = QtWidgets.QHBoxLayout(self)
-        self.setLayout(taskLayout)
-
-
 class Window(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,8 +37,8 @@ class Window(QtWidgets.QWidget):
         if self.handle:
             rect = ctypes.wintypes.RECT()
             ctypes.windll.dwmapi.DwmGetWindowAttribute(self.handle, DWMWA_EXTENDED_FRAME_BOUNDS, ctypes.pointer(rect), ctypes.sizeof(rect))
-            self.setGeometry(rect.left, rect.bottom/2, 50, 50)
-            self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
+            self.setGeometry(rect.left, rect.bottom/2, 50, 60)
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
         # ボタン
         global button_open
         button_open =  QtWidgets.QPushButton("", self)
@@ -56,12 +46,12 @@ class Window(QtWidgets.QWidget):
         button_open.setStyleSheet("background-color: rgba(170, 170, 170, 225);")
         button_open.move(0, 0)
         button_open.resize(15, 15)
-        # スライダ用レイアウトの作成
-        self.sliderBox = QtWidgets.QHBoxLayout()
-        # コンボボックス用レイアウト
-        self.layerpos = QtWidgets.QHBoxLayout()
-        # タスク用レイアウト
-        self.scrollAreaWidgetLayout = QtWidgets.QVBoxLayout()
+        #スクロール用レイアウト
+        self.scrollBox = QtWidgets.QVBoxLayout()
+        self.scrollBox.setContentsMargins(0, 0, 0, 0)
+        # 残りのウィジェット用レイアウトの作成
+        self.openBox = QtWidgets.QVBoxLayout()
+        self.openBox.setContentsMargins(0, 0, 0, 0)
         # 残り時間レイアウトの作成
         self.timerBox = QtWidgets.QHBoxLayout()
         self.timerBox.setContentsMargins(0, 0, 0, 0)
@@ -89,11 +79,11 @@ class Window(QtWidgets.QWidget):
         # 親レイアウトの作成
         self.centralwidgetLayout = QtWidgets.QVBoxLayout()
         self.centralwidgetLayout.setContentsMargins(0, 15, 0, 0)
-        self.centralwidgetLayout.addLayout(self.clockBox, 1)
+        self.centralwidgetLayout.addLayout(self.clockBox, 2)
         self.centralwidgetLayout.addLayout(self.timerBox, 1)
+        self.centralwidgetLayout.addLayout(self.scrollBox, 3)
+        self.centralwidgetLayout.addLayout(self.openBox, 13)
         self.setLayout(self.centralwidgetLayout)
-
-
 
     def valueChangedCallback(self, value):
         # 「sender」を使って、どのウィジェットから呼び出されたか調べる。
@@ -125,74 +115,114 @@ class Window(QtWidgets.QWidget):
     #ウィンドウを開閉
     def open_window(self):
         if self.flag == 1: #開く
+            if self.onetimeFlag != 0:
+                self.strechBox.deleteLater()
             print("open")
             self.flag = 0
             self.setGeometry(rect.left, rect.top, (rect.right - rect.left)/3, rect.bottom - rect.top)
             self.setStyleSheet("background-color: rgba(170, 170, 170, 225);")
-            # # 時計
-            # self.clockBox.setContentsMargins(0, 0, 0, 0)
+            #時計
+            self.clockBox.setContentsMargins(0, 0, 0, 0)
             # 残り時間
-            self.label.setText(self.nextschedule_h + ":" + self.nextschedule_m + "まで残り" + self.remainmin + "分")
-            self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:81px;")
+            # self.label.setText(self.nextschedule_h + ":" + self.nextschedule_m + "まで残り" + self.remainmin + "分")
+            # self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:81px;")
             # scroll
             self.scrollArea = QtWidgets.QScrollArea(self)
             self.scrollArea.setWidgetResizable(True)
-            self.scrollAreaWidgetLayout.insertWidget(-1, self.scrollArea)
-            # QScrollAreaに中身のWidgetを設定
-            self.scrollArea.setWidget()
+            self.scrollAreaWidget = QtWidgets.QWidget()
+            self.scrollAreaWidgetLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidget)
+            self.scrollArea.setWidget(self.scrollAreaWidget)
+            self.scrollBox.insertWidget(0, self.scrollArea, 1)
+            self.addtask()
+            self.addtask()
+            self.addtask()
+            self.addtask()
+            self.addtask()
+            self.addtask()
+            self.addtask()
+            self.openBox.addStretch()
+            # コンボボックス用レイアウト
+            self.layerpos = QtWidgets.QHBoxLayout()
             # comboBox
             self.comboBox = QtWidgets.QComboBox()
             self.comboBox.addItems(['左上', '左中', '左下', '右上', '右中', '右下'])
             self.layerpos.insertWidget(-1, self.comboBox)
             self.comboBox.setCurrentIndex(self.comboid)
-            if self.onetimeFlag == 0:
-                self.centralwidgetLayout.addLayout(self.layerpos, 1)
+            self.openBox.insertLayout(-1, self.layerpos, 1)
+            # スライダ用レイアウトの作成
+            self.sliderBox = QtWidgets.QHBoxLayout()
             # spinbox
             self.spinbox = QtWidgets.QSpinBox(self)
             self.spinbox.setGeometry(0, 0, 50, 30)
-            self.sliderBox.insertWidget(-1, self.spinbox)
+            self.sliderBox.insertWidget(-1, self.spinbox, 1)
             self.spinbox.setValue(self.layersize)
             self.spinbox.valueChanged[int].connect(self.valueChangedCallback)   
             # スライダ
             self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
             self.slider.setGeometry(0, 0, (rect.right - rect.left)/3 - 100, 30)
-            self.sliderBox.insertWidget(-1, self.slider)
+            self.sliderBox.insertWidget(-1, self.slider, 9)
             self.slider.setValue(self.layersize)
             self.slider.valueChanged[int].connect(self.valueChangedCallback)
-            if self.onetimeFlag == 0:
-                print("add layout")
-                self.centralwidgetLayout.addLayout(self.sliderBox, 1)
+            self.openBox.insertLayout(-1, self.sliderBox, 1)
             self.onetimeFlag = 1
 
         elif self.flag == 0: #閉じる
             print("close")
             self.comboid = self.comboBox.currentIndex()
+            self.scrollArea.deleteLater()
+            self.sliderBox.deleteLater()
             self.slider.deleteLater()
             self.spinbox.deleteLater()
             self.comboBox.deleteLater()
-            if self.comboid == 0:
-                self.setGeometry(rect.left, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            elif self.comboid == 1:
-                self.setGeometry(rect.left, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            elif self.comboid == 2:
-                self.setGeometry(rect.left, rect.bottom - 50 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            elif self.comboid == 3:
-                self.setGeometry(rect.right - 50, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            elif self.comboid == 4:
-                self.setGeometry(rect.right - 50, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            elif self.comboid == 5:
-                self.setGeometry(rect.right - 50, rect.bottom - 50, 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            
-            self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
-            self.label.setText(self.remainmin + "分")
-            self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:27px;")
-            self.label.setAlignment(QtCore.Qt.AlignCenter)
+
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
+            # self.label.setText(self.remainmin + "分")
+            # self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:27px;")
+            # self.label.setAlignment(QtCore.Qt.AlignCenter)
+
+            # if self.comboid == 0:
+            #     self.setGeometry(rect.left, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            # elif self.comboid == 1:
+            self.setGeometry(rect.left, rect.bottom/2, 50, 50)
+            # elif self.comboid == 2:
+            #     self.setGeometry(rect.left, rect.bottom - 50 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            # elif self.comboid == 3:
+            #     self.setGeometry(rect.right - 50, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            # elif self.comboid == 4:
+            #     self.setGeometry(rect.right - 50, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            # elif self.comboid == 5:
+            #     self.setGeometry(rect.right - 50, rect.bottom - 50, 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+                    # strech入れる場所
+            self.strechBox = QtWidgets.QHBoxLayout()
+            self.strechBox.setContentsMargins(0, 0, 0, 0)
+            self.strechBox.addStretch(1)
+            self.openBox.insertLayout(1, self.strechBox, 1)
+            self.onetimeFlag = 1
 
             self.flag = 1
 
     def setcurrenttime(self):
         currentTime = QtCore.QDateTime.currentDateTime().toString('hh:mm')
         self.timedisplay.display(currentTime)
+
+    def addtask(self):
+        #タスク
+        self.task =  QtWidgets.QGroupBox(self.scrollAreaWidget)
+        self.scrollAreaWidgetLayout.addWidget(self.task)
+        #詳細
+        self.detailBox = QtWidgets.QHBoxLayout(self.task)
+        #チェックボックス
+        checkBox1 = QtWidgets.QCheckBox("First", self.task)
+        self.detailBox.insertWidget(-1, checkBox1)
+        taskLabel = QtWidgets.QLabel("【タスク】", self.task)
+        taskLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, taskLabel)
+        timerLabel = QtWidgets.QLabel("15分", self.task)
+        timerLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, timerLabel)
+        quantityLabel = QtWidgets.QLabel("3回", self.task)
+        quantityLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, quantityLabel)
         
 
     @staticmethod
