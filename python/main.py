@@ -5,7 +5,7 @@ import ctypes
 import ctypes.wintypes
 from queue import Empty
 from traceback import print_last
-import win32gui
+import datetime
 
 from PySide2 import QtCore
 from PySide2 import QtGui
@@ -25,29 +25,50 @@ class Window(QtWidgets.QWidget):
         #ウィンドウハンドルをメモ帳に指定
         self.handle = self.__get_handle("masterduel")
         self.flag = 1
-        global button_open
+        self.layersize = 0
+        self.comboid = 1
+        self.watchsizew = 50
+        self.watchsizeh = 50
         global rect
         if self.handle:
             rect = ctypes.wintypes.RECT()
             ctypes.windll.dwmapi.DwmGetWindowAttribute(self.handle, DWMWA_EXTENDED_FRAME_BOUNDS, ctypes.pointer(rect), ctypes.sizeof(rect))
             self.setGeometry(rect.left, rect.bottom/2, 50, 50)
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
         
         #ボタン
+        global button_open
         button_open =  QtWidgets.QPushButton("", self)
-        button_open.setStyleSheet("color: rgba(225, 0, 0, 225);")
         button_open.clicked.connect(self.open_window)
+        button_open.setStyleSheet("background-color: rgba(170, 170, 170, 225);")
         button_open.move(0, 0)
-        button_open.resize(30, 30)
-
+        button_open.resize(15, 15)
         #スライダ用レイアウトの作成
         self.sliderBox = QtWidgets.QHBoxLayout()
-        self.sliderBox.setGeometry(QtCore.QRect(0, rect.bottom, rect.right - rect.left/3, 30))
-        self.setLayout(self.sliderBox)
+        #コンボボックス用レイアウト
+        self.layerpos = QtWidgets.QHBoxLayout()
+        #時計用レイアウトの作成
+        self.clockBox = QtWidgets.QHBoxLayout()
+        self.clockBox.setContentsMargins(0, 0, 0, 0)
+        #時計
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.setcurrenttime)
+        self.timedisplay = QtWidgets.QLCDNumber(self)
+        self.timedisplay.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
+        self.timedisplay.setDigitCount(8)
+        self.timedisplay.setGeometry(0 , 0, 50, 50)
+        self.clockBox.setContentsMargins(0, 0, 0, 0)
+        self.setcurrenttime()
+        self.timer.start(10)
+        self.timedisplay.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(225, 225, 225, 225);font-size:106px;")
+        self.clockBox.addWidget(self.timedisplay)
+        # 親レイアウトの作成
+        self.centralwidgetLayout = QtWidgets.QVBoxLayout()
+        self.centralwidgetLayout.setContentsMargins(0, 15, 0, 0)
+        self.centralwidgetLayout.addLayout(self.clockBox, 1)
+        self.setLayout(self.centralwidgetLayout)
 
-        self.installEventFilter(self)
-        self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
 
-        self.layersize = 0
 
     def valueChangedCallback(self, value):
         # 「sender」を使って、どのウィジェットから呼び出されたか調べる。
@@ -80,38 +101,72 @@ class Window(QtWidgets.QWidget):
     def open_window(self):
         if self.flag == 1: #開く
             print("open")
+            
             self.setGeometry(rect.left, rect.top, (rect.right - rect.left)/3, rect.bottom - rect.top)
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
             self.flag = 0
-            #spinbox
+            # self.centralwidgetLayout.insertStretch(14)
+            #時計
+            self.clockBox.setContentsMargins(0, 0, 0, 0)
+            # comboBox
+            self.comboBox = QtWidgets.QComboBox()
+            self.comboBox.addItems(['左上', '左中', '左下', '右上', '右中', '右下'])
+            self.layerpos.insertWidget(-1, self.comboBox)
+            self.comboBox.setCurrentIndex(self.comboid)
+            self.centralwidgetLayout.addLayout(self.layerpos, 1)
+            # spinbox
             self.spinbox = QtWidgets.QSpinBox(self)
             self.spinbox.setGeometry(0, 0, 50, 30)
             self.sliderBox.insertWidget(-1, self.spinbox)
+            self.spinbox.setValue(self.layersize)
             self.spinbox.valueChanged[int].connect(self.valueChangedCallback)   
-            #スライダ
+            # スライダ
             self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
             self.slider.setGeometry(0, 0, (rect.right - rect.left)/3 - 100, 30)
             self.sliderBox.insertWidget(-1, self.slider)
+            self.slider.setValue(self.layersize)
             self.slider.valueChanged[int].connect(self.valueChangedCallback)
+            self.centralwidgetLayout.addLayout(self.sliderBox, 1)
+
         elif self.flag == 0: #閉じる
             print("close")
+            self.comboid = self.comboBox.currentIndex()
             self.slider.deleteLater()
             self.spinbox.deleteLater()
-            self.setGeometry(rect.left, rect.bottom/2 , 50 + self.layersize, 50 + self.layersize)
+            self.comboBox.deleteLater()
+            if self.comboid == 0:
+                self.setGeometry(rect.left, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            elif self.comboid == 1:
+                self.setGeometry(rect.left, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            elif self.comboid == 2:
+                self.setGeometry(rect.left, rect.bottom - 50 , 100 + 1.5*self.layersize, 50 + 1*self.layersize)
+            elif self.comboid == 3:
+                self.setGeometry(rect.right - 50, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            elif self.comboid == 4:
+                self.setGeometry(rect.right - 50, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            elif self.comboid == 5:
+                self.setGeometry(rect.right - 50, rect.bottom - 50, 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
             self.flag = 1
 
     #ウィンドウを閉じたとき
     # def close_window(self):
+
+    def setcurrenttime(self):
+        currentTime = QtCore.QDateTime.currentDateTime().toString('hh:mm')
+        self.timedisplay.display(currentTime)
 
     @staticmethod
     #ウィンドウハンドルを返す
     def __get_handle(process_name):        
         return user32.FindWindowW(0, process_name)
     
-    #トップレベルのWidgetはWA_TranslucentBackgroundフラグが立つと、
     # 背景が描画されなくなるので、paintEvent側で描画する。
-    def paintEvent(self, event):
+    def paintEvent(self,Event):
         painter = QtGui.QPainter(self)
         painter.fillRect(0, 0, self.width(), self.height(), painter.background())
+
 
 #タスクトレーに表示する
 class TaskTray_Icon(QtWidgets.QSystemTrayIcon):
