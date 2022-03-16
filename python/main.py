@@ -15,6 +15,16 @@ user32 = ctypes.windll.user32
 # https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
 DWMWA_EXTENDED_FRAME_BOUNDS = 9
 
+
+
+# QScrollAreaの中身
+class InnerWidget(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super(InnerWidget, self).__init__(*args, **kwargs)      
+        taskLayout = QtWidgets.QHBoxLayout(self)
+        self.setLayout(taskLayout)
+
+
 class Window(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,47 +35,62 @@ class Window(QtWidgets.QWidget):
         #ウィンドウハンドルをメモ帳に指定
         self.handle = self.__get_handle("masterduel")
         self.flag = 1
+        self.onetimeFlag = 0
         self.layersize = 0
         self.comboid = 1
         self.watchsizew = 50
         self.watchsizeh = 50
+        self.nextschedule_h = "23"
+        self.nextschedule_m = "0"
+        self.remainmin = "x"
         global rect
         if self.handle:
             rect = ctypes.wintypes.RECT()
             ctypes.windll.dwmapi.DwmGetWindowAttribute(self.handle, DWMWA_EXTENDED_FRAME_BOUNDS, ctypes.pointer(rect), ctypes.sizeof(rect))
             self.setGeometry(rect.left, rect.bottom/2, 50, 50)
             self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
-        
-        #ボタン
+        # ボタン
         global button_open
         button_open =  QtWidgets.QPushButton("", self)
         button_open.clicked.connect(self.open_window)
         button_open.setStyleSheet("background-color: rgba(170, 170, 170, 225);")
         button_open.move(0, 0)
         button_open.resize(15, 15)
-        #スライダ用レイアウトの作成
+        # スライダ用レイアウトの作成
         self.sliderBox = QtWidgets.QHBoxLayout()
-        #コンボボックス用レイアウト
+        # コンボボックス用レイアウト
         self.layerpos = QtWidgets.QHBoxLayout()
-        #時計用レイアウトの作成
+        # タスク用レイアウト
+        self.scrollAreaWidgetLayout = QtWidgets.QVBoxLayout()
+        # 残り時間レイアウトの作成
+        self.timerBox = QtWidgets.QHBoxLayout()
+        self.timerBox.setContentsMargins(0, 0, 0, 0)
+        # 残り時間
+        self.label = QtWidgets.QLabel(self.remainmin + "分")
+        self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:27px;")
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.timerBox.setContentsMargins(0, 0, 0, 0)
+        self.timerBox.addWidget(self.label)
+        # 時計用レイアウトの作成
         self.clockBox = QtWidgets.QHBoxLayout()
         self.clockBox.setContentsMargins(0, 0, 0, 0)
-        #時計
-        self.timer = QtCore.QTimer(self)
-        self.timer.timeout.connect(self.setcurrenttime)
+        # 時計
+        timer = QtCore.QTimer(self)
+        timer.timeout.connect(self.setcurrenttime)
         self.timedisplay = QtWidgets.QLCDNumber(self)
         self.timedisplay.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
         self.timedisplay.setDigitCount(8)
         self.timedisplay.setGeometry(0 , 0, 50, 50)
         self.clockBox.setContentsMargins(0, 0, 0, 0)
         self.setcurrenttime()
-        self.timer.start(10)
+        timer.start(10)
         self.timedisplay.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(225, 225, 225, 225);font-size:106px;")
         self.clockBox.addWidget(self.timedisplay)
         # 親レイアウトの作成
         self.centralwidgetLayout = QtWidgets.QVBoxLayout()
         self.centralwidgetLayout.setContentsMargins(0, 15, 0, 0)
         self.centralwidgetLayout.addLayout(self.clockBox, 1)
+        self.centralwidgetLayout.addLayout(self.timerBox, 1)
         self.setLayout(self.centralwidgetLayout)
 
 
@@ -101,19 +126,27 @@ class Window(QtWidgets.QWidget):
     def open_window(self):
         if self.flag == 1: #開く
             print("open")
-            
-            self.setGeometry(rect.left, rect.top, (rect.right - rect.left)/3, rect.bottom - rect.top)
-            self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
             self.flag = 0
-            # self.centralwidgetLayout.insertStretch(14)
-            #時計
-            self.clockBox.setContentsMargins(0, 0, 0, 0)
+            self.setGeometry(rect.left, rect.top, (rect.right - rect.left)/3, rect.bottom - rect.top)
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 225);")
+            # # 時計
+            # self.clockBox.setContentsMargins(0, 0, 0, 0)
+            # 残り時間
+            self.label.setText(self.nextschedule_h + ":" + self.nextschedule_m + "まで残り" + self.remainmin + "分")
+            self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:81px;")
+            # scroll
+            self.scrollArea = QtWidgets.QScrollArea(self)
+            self.scrollArea.setWidgetResizable(True)
+            self.scrollAreaWidgetLayout.insertWidget(-1, self.scrollArea)
+            # QScrollAreaに中身のWidgetを設定
+            self.scrollArea.setWidget()
             # comboBox
             self.comboBox = QtWidgets.QComboBox()
             self.comboBox.addItems(['左上', '左中', '左下', '右上', '右中', '右下'])
             self.layerpos.insertWidget(-1, self.comboBox)
             self.comboBox.setCurrentIndex(self.comboid)
-            self.centralwidgetLayout.addLayout(self.layerpos, 1)
+            if self.onetimeFlag == 0:
+                self.centralwidgetLayout.addLayout(self.layerpos, 1)
             # spinbox
             self.spinbox = QtWidgets.QSpinBox(self)
             self.spinbox.setGeometry(0, 0, 50, 30)
@@ -126,7 +159,10 @@ class Window(QtWidgets.QWidget):
             self.sliderBox.insertWidget(-1, self.slider)
             self.slider.setValue(self.layersize)
             self.slider.valueChanged[int].connect(self.valueChangedCallback)
-            self.centralwidgetLayout.addLayout(self.sliderBox, 1)
+            if self.onetimeFlag == 0:
+                print("add layout")
+                self.centralwidgetLayout.addLayout(self.sliderBox, 1)
+            self.onetimeFlag = 1
 
         elif self.flag == 0: #閉じる
             print("close")
@@ -139,7 +175,7 @@ class Window(QtWidgets.QWidget):
             elif self.comboid == 1:
                 self.setGeometry(rect.left, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
             elif self.comboid == 2:
-                self.setGeometry(rect.left, rect.bottom - 50 , 100 + 1.5*self.layersize, 50 + 1*self.layersize)
+                self.setGeometry(rect.left, rect.bottom - 50 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
             elif self.comboid == 3:
                 self.setGeometry(rect.right - 50, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
             elif self.comboid == 4:
@@ -148,14 +184,16 @@ class Window(QtWidgets.QWidget):
                 self.setGeometry(rect.right - 50, rect.bottom - 50, 50 + 1.5*self.layersize, 50 + 1*self.layersize)
             
             self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
-            self.flag = 1
+            self.label.setText(self.remainmin + "分")
+            self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:27px;")
+            self.label.setAlignment(QtCore.Qt.AlignCenter)
 
-    #ウィンドウを閉じたとき
-    # def close_window(self):
+            self.flag = 1
 
     def setcurrenttime(self):
         currentTime = QtCore.QDateTime.currentDateTime().toString('hh:mm')
         self.timedisplay.display(currentTime)
+        
 
     @staticmethod
     #ウィンドウハンドルを返す
