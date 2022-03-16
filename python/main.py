@@ -38,7 +38,7 @@ class Window(QtWidgets.QWidget):
             rect = ctypes.wintypes.RECT()
             ctypes.windll.dwmapi.DwmGetWindowAttribute(self.handle, DWMWA_EXTENDED_FRAME_BOUNDS, ctypes.pointer(rect), ctypes.sizeof(rect))
             self.setGeometry(rect.left, rect.bottom/2, 50, 60)
-            self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
         # ボタン
         global button_open
         button_open =  QtWidgets.QPushButton("", self)
@@ -115,6 +115,7 @@ class Window(QtWidgets.QWidget):
     #ウィンドウを開閉
     def open_window(self):
         if self.flag == 1: #開く
+            button_open.move(0, 0)
             if self.onetimeFlag != 0:
                 self.strechBox.deleteLater()
             print("open")
@@ -175,27 +176,33 @@ class Window(QtWidgets.QWidget):
             self.spinbox.deleteLater()
             self.comboBox.deleteLater()
 
-            self.setStyleSheet("background-color: rgba(170, 170, 170, 128);")
+            self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
             # self.label.setText(self.remainmin + "分")
             # self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:27px;")
             # self.label.setAlignment(QtCore.Qt.AlignCenter)
 
-            # if self.comboid == 0:
-            #     self.setGeometry(rect.left, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            # elif self.comboid == 1:
-            self.setGeometry(rect.left, rect.bottom/2, 50, 50)
-            # elif self.comboid == 2:
-            #     self.setGeometry(rect.left, rect.bottom - 50 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            # elif self.comboid == 3:
-            #     self.setGeometry(rect.right - 50, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            # elif self.comboid == 4:
-            #     self.setGeometry(rect.right - 50, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
-            # elif self.comboid == 5:
-            #     self.setGeometry(rect.right - 50, rect.bottom - 50, 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+            if self.comboid == 0:
+                self.setGeometry(rect.left, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+                button_open.move(0, 0)
+            elif self.comboid == 1:
+                self.setGeometry(rect.left, rect.bottom/2, 50 + 1.5*self.layersize, 50 + 1.5*self.layersize)
+                button_open.move(0, 0)
+            elif self.comboid == 2:
+                self.setGeometry(rect.left, rect.bottom - 80 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+                button_open.move(0, 0)
+            elif self.comboid == 3:
+                self.setGeometry(rect.right - 90, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+                button_open.move(75, 0)
+            elif self.comboid == 4:
+                self.setGeometry(rect.right - 90, rect.bottom/2 , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+                button_open.move(75, 0)
+            elif self.comboid == 5:
+                self.setGeometry(rect.right - 90, rect.bottom - 80, 50 + 1.5*self.layersize, 50 + 1*self.layersize)
+                button_open.move(75, 0)
                     # strech入れる場所
             self.strechBox = QtWidgets.QHBoxLayout()
             self.strechBox.setContentsMargins(0, 0, 0, 0)
-            self.strechBox.addStretch(1)
+            self.strechBox.addStretch(2)
             self.openBox.insertLayout(1, self.strechBox, 1)
             self.onetimeFlag = 1
 
