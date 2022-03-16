@@ -9,7 +9,7 @@ from profileManeger import optimizeProfile
 from taskListManeger import updateTaskList
 
 
-def main():
+def getTaskList():
 
     game_title = "Apex"
 
@@ -67,7 +67,3 @@ def main():
 
         # 1sec待つ
         time.sleep(1)
-
-
-if __name__ == '__main__':
-    main()

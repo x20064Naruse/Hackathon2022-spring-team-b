@@ -8,6 +8,9 @@ import profileManeger
 
 
 def updateTaskList(remaining_time, game_title):
+
+    newTaskList = []
+
     if remaining_time > 0:
         profile = profileManeger.loadProfile(game_title)
 
@@ -18,12 +21,11 @@ def updateTaskList(remaining_time, game_title):
                 profile[i] = profile[i+1]
                 profile[i+1] = swap
 
-        newTaskList = []
         for pr in profile:
             loop = 0  # 繰り返し回数
 
             # タスクの最大数が0(無限)の場合はとりあえず上限10回だけ提案する
-            if pr.quantity == 0:
+            if pr.quantity <= 0:
                 loop = 10
             # タスクの最大数が1以上の場合はできるだけ最大数分提案する
             else:
@@ -39,7 +41,7 @@ def updateTaskList(remaining_time, game_title):
                     remaining_time -= pr.required_time*60  # 残り時間減少
                     continue
 
-        return newTaskList
-
     else:
         print('!!予定が進行中です!!')
+
+    return newTaskList
