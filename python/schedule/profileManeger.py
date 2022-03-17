@@ -69,7 +69,7 @@ def saveProfile(updateRequestProfile,game_title):
 
 # ゲームタイトルを指定してプロファイル読込
 def loadProfile(game_title):
-    filename=game_title+'.pkl'
+    filename='./' + game_title+'.pkl'
     if not os.path.exists(filename):
         print('[ProfileManeger]',filename,'is not found.')
 
