@@ -9,6 +9,9 @@ import datetime
 import getTaskList
 import profileManeger
 
+from dataclasses import dataclass
+import pandas
+
 from PySide2 import QtCore
 from PySide2 import QtGui
 from PySide2 import QtWidgets
@@ -18,9 +21,26 @@ user32 = ctypes.windll.user32
 # https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
 DWMWA_EXTENDED_FRAME_BOUNDS = 9
 
+# プロファイル構造体
+@dataclass
+class ProfileList:
+    game_title: str  # ゲームタイトル
+    task_name: str  # タスク名
+    required_time: int  # 必要時間
+    priority: int  # 優先度
+    quantity: int  # 最大値
+
 class Window(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # テスト----------------------------------------------
+        # game_title = "Apex"
+        # l=[]
+        # l.append(ProfileList(game_title, "1Round", 30, 1, 0))
+        # l.append(ProfileList(game_title, "DailyChallenge", 2, 3, 5))
+        # l.append(ProfileList(game_title, "3V3", 10, 2, 0))
+        # l.append(ProfileList(game_title, "WeeklyChallenge", 10, 4, 11))
+        # profileManeger.saveProfile(l,game_title)
         #ウィンドウ背景の透明化オプション
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         #タスクバーに表示されない/タイトルバーの削除/常に画面の前面にある
@@ -41,7 +61,7 @@ class Window(QtWidgets.QWidget):
         self.remainmina = 0
         self.remainhour = 0
         self.tasknum = 0 #表示されてるタスクの数
-        self.titlename = "" #選択されているタイトル
+        self.titlename = "Apex" #選択されているタイトル
 
         global rect
         if self.handle:
@@ -74,9 +94,9 @@ class Window(QtWidgets.QWidget):
         self.timerBox.setContentsMargins(0, 0, 0, 0)
         # 残り時間
         timer = QtCore.QTimer(self)
-        # timer.timeout.connect(self.setremaintime)
+        timer.timeout.connect(self.setremaintime)
         self.label = QtWidgets.QLabel("")
-        # self.setremaintime()
+        self.setremaintime()
         timer.start(10)
         self.label.setStyleSheet("background-color: rgba(0, 0, 0, 128); color: rgba(170, 170, 170, 255);font-family: impact;font-size:27px;")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
@@ -141,7 +161,6 @@ class Window(QtWidgets.QWidget):
             if self.onetimeFlag != 0:
                 self.strechBox.deleteLater()
             button_pro.resize(120, 15)
-            print("open")
             self.flag = 0
             self.setGeometry(rect.left, rect.top, (rect.right - rect.left)/3, rect.bottom - rect.top)
             self.setStyleSheet("background-color: rgba(170, 170, 170, 225);")
@@ -153,7 +172,7 @@ class Window(QtWidgets.QWidget):
             self.scrollBox.setContentsMargins(0, 0, 0, 0)
             #ゲームタイトル
             self.titleBox = QtWidgets.QComboBox(self)
-            self.titleBox.addItems(['Apex', 'Minecraft', 'Masterduel'])
+            self.titleBox.addItems(profileManeger.getGameTitleList())
             self.optionArea.insertWidget(0, self.titleBox)
             # scroll
             self.scrollArea = QtWidgets.QScrollArea(self)
@@ -165,7 +184,6 @@ class Window(QtWidgets.QWidget):
             self.titleBox.setCurrentText(self.titlename)
             self.tasklist, self.tmp0 = getTaskList.getTaskList(self.titlename)
             for tasks in self.tasklist:
-                print(tasks)
                 gametitle = tasks.game_title
                 taskname = tasks.task_name
                 required = tasks.required_time
@@ -201,7 +219,6 @@ class Window(QtWidgets.QWidget):
             self.onetimeFlag = 1
 
         elif self.flag == 0: #閉じる
-            print(self.remainsec)
             button_pro.resize(0, 0)
             self.comboid = self.comboBox.currentIndex()
             self.scrollArea.deleteLater()
@@ -212,13 +229,6 @@ class Window(QtWidgets.QWidget):
             self.titleBox.deleteLater()
 
             self.setStyleSheet("background-color: rgba(170, 170, 170, 0);")
-            # if self.remainmin >= 60:
-            #     self.remainhour = self.remainmin // 60
-            #     self.remainmina = self.remainmin % 60
-            # if self.remainhour == 0:
-            #     self.label.setText(str(self.remainmin) + "m")
-            # else:
-            #     self.label.setText(str(self.remainhour) + "h" + str(self.remainmina) + "m")
 
             if self.comboid == 0:
                 self.setGeometry(rect.left, rect.top , 50 + 1.5*self.layersize, 50 + 1*self.layersize)
@@ -252,7 +262,7 @@ class Window(QtWidgets.QWidget):
         self.timedisplay.display(currentTime)
 
     def setremaintime(self):
-        self.temp1, self.remaintime = getTaskList.getTaskList('Apex')
+        self.temp1, self.remaintime = getTaskList.getTaskList('Apex') #ここなんとかしたい-------------------------------------------------------------
         self.label.setText(str(self.remaintime))
 
     def addtask(self, gametitle, taskname, requiredtime, priority, quantity):
@@ -287,13 +297,9 @@ class Window(QtWidgets.QWidget):
             quantity = tasks.quantity
             self.addtask(gametitle, taskname, required, priority, quantity)
     
-    # def makeWindow(self):
-    #     subWindow = SubWindow(self)
-    #     subWindow.show()
-        
-    # # サブウィンドウから実行
-    # def setParam(self, param):
-    #     self.label.setText(param)
+    def makeWindow(self):
+        subWindow = SubWindow(self)
+        subWindow.show()
 
     @staticmethod
     #ウィンドウハンドルを返す
@@ -309,60 +315,113 @@ class SubWindow:
     def __init__(self, parent=None):
         self.w = QtWidgets.QDialog(parent)
         self.parent = parent
-        titlename = "" #選択されているタイトル
+        self.titlename = "Apex" #選択されているタイトル]
+        self.i = 0
+        #タスク用
+        self.task_i = 0
+        self.task_j = 0
+        self.task_text = []
+        #時間用
+        #優先度用
+        #回数用
         #ゲームタイトル
-        self.titleBox = QtWidgets.QComboBox(self)
-        self.titleBox.addItems(['Apex', 'Minecraft', 'Masterduel'])
-        self.optionArea.insertWidget(0, self.titleBox)
-        self.scrollBox = QtWidgets.QVBoxLayout()
-        self.scrollBox.setContentsMargins(0, 0, 0, 0)
+        profiletitleBox = QtWidgets.QComboBox()
+        profiletitleBox.addItems(profileManeger.getGameTitleList())
+        profiletitleBox.setCurrentText(self.titlename)
+        scrollBox = QtWidgets.QVBoxLayout()
+        scrollBox.setContentsMargins(0, 0, 0, 0)
         # scroll
-        self.scrollArea = QtWidgets.QScrollArea(self)
-        self.scrollArea.setWidgetResizable(True)
+        scrollArea = QtWidgets.QScrollArea()
+        scrollArea.setWidgetResizable(True)
         self.scrollAreaWidget = QtWidgets.QWidget()
         self.scrollAreaWidgetLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidget)
-        self.scrollArea.setWidget(self.scrollAreaWidget)
-        self.scrollBox.addWidget(1, self.scrollArea, 10)
-        self.titleBox.setCurrentText(titlename)
-        self.tasklist, self.tmp0 = getTaskList.getTaskList(titlename)
-        for tasks in self.tasklist:
-            print(tasks)
+        scrollArea.setWidget(self.scrollAreaWidget)
+        scrollBox.addWidget(scrollArea)
+        self.loadProfiles = profileManeger.loadProfile(self.titlename)
+        #タイトル
+        self.task =  QtWidgets.QGroupBox(self.scrollAreaWidget)
+        self.scrollAreaWidgetLayout.addWidget(self.task)
+        self.detailBox = QtWidgets.QHBoxLayout(self.task)
+        self.titleEdit = QtWidgets.QLineEdit(self.titlename, self.task)
+        self.detailBox.insertWidget(-1, self.titleEdit)
+        # 項目
+        self.task =  QtWidgets.QGroupBox(self.scrollAreaWidget)
+        self.scrollAreaWidgetLayout.addWidget(self.task)
+        self.detailBox = QtWidgets.QHBoxLayout(self.task)
+        taskLabel = QtWidgets.QLabel("タスク名", self.task)
+        taskLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, taskLabel)
+        timerLabel = QtWidgets.QLabel("所要時間", self.task)
+        timerLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, timerLabel)
+        timerLabel = QtWidgets.QLabel("優先度", self.task)
+        timerLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, timerLabel)
+        quantityLabel = QtWidgets.QLabel("上限回数", self.task)
+        quantityLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
+        self.detailBox.insertWidget(-1, quantityLabel)
+        
+        for tasks in self.loadProfiles:
             gametitle = tasks.game_title
             taskname = tasks.task_name
             required = tasks.required_time
             priority = tasks.priority
             quantity = tasks.quantity
-            self.edittask(gametitle, taskname, required, priority, quantity)
-        self.titleBox.currentIndexChanged.connect(self.updatetask)
+            self.edittask(gametitle, taskname, required, priority, quantity, self.i)
+            self.i +=1
+        # self.titleBox.currentIndexChanged.connect(self.updatetask)
 
         button = QtWidgets.QPushButton('送信')
-        button.clicked.connect(self.setParamOriginal)
+        button.clicked.connect(self.saveprofile)
 
         layout = QtWidgets.QVBoxLayout()
 
+        layout.addWidget(profiletitleBox)
+        layout.addLayout(scrollBox)
         layout.addWidget(button)
-
+        
         self.w.setLayout(layout)
 
-    def edittask(self, gametitle, taskname, requiredtime, priority, quantity):
+    def edittask(self, gametitle, taskname, requiredtime, priority, quantity, i):
         #タスク
         self.task =  QtWidgets.QGroupBox(self.scrollAreaWidget)
         self.scrollAreaWidgetLayout.addWidget(self.task)
         #詳細
-        self.detailBox = QtWidgets.QHBoxLayout(self.task)
-        taskLabel = QtWidgets.QLabel("【" + taskname + "】", self.task)
-        taskLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
-        self.detailBox.insertWidget(-1, taskLabel)
-        timerLabel = QtWidgets.QLabel(str(requiredtime) + "分", self.task)
-        timerLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
-        self.detailBox.insertWidget(-1, timerLabel)
-        quantityLabel = QtWidgets.QLabel(str(quantity) + "回", self.task)
-        quantityLabel.setStyleSheet("color: rgba(0, 0, 0, 255);font-family: impact;font-size:18px;")
-        self.detailBox.insertWidget(-1, quantityLabel)
+        globals()["self.detailBox%s"% i] = QtWidgets.QHBoxLayout(self.task)
+        self.taskEdit = QtWidgets.QLineEdit(taskname, self.task)
+        globals()["self.detailBox%s"% i].insertWidget(0, self.taskEdit)
+        self.timerEdit = QtWidgets.QLineEdit(str(requiredtime), self.task)
+        globals()["self.detailBox%s"% i].insertWidget(1, self.timerEdit)
+        self.prioriltyEdit = QtWidgets.QLineEdit(str(priority), self.task)
+        globals()["self.detailBox%s"% i].insertWidget(2, self.prioriltyEdit)
+        self.quantityEdit = QtWidgets.QLineEdit(str(quantity), self.task)
+        globals()["self.detailBox%s"% i].insertWidget(3, self.quantityEdit)
 
     # ここで親ウィンドウに値を渡している
-    def setParamOriginal(self):
-        self.parent.setParam(self.edit.text())
+    def saveprofile(self):
+        l=[]
+        count = self.scrollAreaWidgetLayout.count()
+        for a in range(count):
+            if a == 0:
+                continue
+            if a == 1:
+                continue
+            a2 = a - 2
+            for b in range(4):
+                item = globals()["self.detailBox%s"% a2].itemAt(b)
+                item_widgets = item.widget()
+                text = item_widgets.text()
+                if b == 0:
+                    taskedit = text
+                elif b == 1:
+                    timeredit = text
+                elif b == 2:
+                    priorityedit = text
+                elif b == 3:
+                    quantityedit = text
+            l.append(ProfileList(self.titleEdit.text(), taskedit, timeredit, priorityedit, quantityedit))
+
+        profileManeger.saveProfile(l,self.titleEdit)
 
     def show(self):
         self.w.exec_()
