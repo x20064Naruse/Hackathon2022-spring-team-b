@@ -25,8 +25,12 @@ def getScheduledStartTime():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+            CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+            print(CURR_DIR)
+            credential_file=str(CURR_DIR)+'/credentials.json'
+            # flow = InstalledAppFlow.from_client_secrets_file(
+            #     'credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file( credential_file, SCOPES)
             creds = flow.run_local_server(port=0)
         # 次の実行のために認証情報を保存
         with open('token.json', 'w') as token:
@@ -44,11 +48,11 @@ def getScheduledStartTime():
 
     if not events:
         print('No upcoming events found.')
+    scheduledUNIX=0
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('dateTime'))
         # print('StartTime:', start, '\n','EventName:', event['summary'])
 
-        scheduledUNIX=0
         if start == None:
             #日にち取得
             print('start == None')

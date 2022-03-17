@@ -8,6 +8,7 @@ from profileManeger import loadProfile
 from profileManeger import optimizeProfile
 from taskListManeger import updateTaskList
 
+remainSec = 0
 # スケジュール提案
 def getTaskList(game_title):
 
@@ -21,9 +22,11 @@ def getTaskList(game_title):
 
     # 残り時間計算(sec)
     remainSec = scheduledUNIX-nowUNIX
+    
     # print(remainSec, 'seconds left')
     if remainSec > 0:
         print(datetime.timedelta(seconds=remainSec))
+        remainTime = datetime.timedelta(seconds=remainSec)
 
     # # チェック入力
     # checkBoxListener = True
@@ -50,4 +53,4 @@ def getTaskList(game_title):
     #         print('-', l.task_name, '[', l.required_time, 'm]')
     #     print('\n')
 
-    return TaskList
+    return TaskList, remainTime
