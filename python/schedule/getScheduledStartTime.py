@@ -1,4 +1,5 @@
 from __future__ import print_function
+from asyncio.windows_events import NULL
 import datetime
 import os.path
 from googleapiclient.discovery import build
@@ -35,7 +36,7 @@ def getScheduledStartTime():
 
     # カレンダーAPIを呼出
     now = datetime.datetime.utcnow().isoformat() + 'Z'
-    print('Getting the upcoming 1 events')
+    # print('Getting the upcoming 1 events')
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                           maxResults=1, singleEvents=True,
                                           orderBy='startTime').execute()  # maxResults:直近イベント件数
@@ -47,9 +48,15 @@ def getScheduledStartTime():
         start = event['start'].get('dateTime', event['start'].get('dateTime'))
         # print('StartTime:', start, '\n','EventName:', event['summary'])
 
-        # UNIXTIMEへ変換
-        uptoSecond = start[:start.find('+')]  # '+'よりも前を抽出
-        d = datetime.datetime.strptime(uptoSecond, '%Y-%m-%dT%H:%M:%S')  # string -> datetime
-        scheduledUNIX = d.timestamp()  # datetime -> UNIXTIME
+        scheduledUNIX=0
+        if start == None:
+            #日にち取得
+            print('start == None')
+        else:
+            # UNIXTIMEへ変換
+            uptoSecond = start[:start.find('+')]  # '+'よりも前を抽出
+            d = datetime.datetime.strptime(
+                uptoSecond, '%Y-%m-%dT%H:%M:%S')  # string -> datetime
+            scheduledUNIX = d.timestamp()  # datetime -> UNIXTIME
 
     return scheduledUNIX
