@@ -51,7 +51,10 @@ def getScheduledStartTime():
         scheduledUNIX=0
         if start == None:
             #日にち取得
-            print('start == None')
+            uptoSecond = event['start'].get('dateTime', event['start'].get('date'))
+            d = datetime.datetime.strptime(
+                uptoSecond, '%Y-%m-%d')  # string -> datetime
+            scheduledUNIX = d.timestamp()  # datetime -> UNIXTIME
         else:
             # UNIXTIMEへ変換
             uptoSecond = start[:start.find('+')]  # '+'よりも前を抽出
