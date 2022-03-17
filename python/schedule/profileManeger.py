@@ -90,7 +90,7 @@ def loadProfileAll():
         print('[ProfileManeger] Loaded from',filename)
         for lP in loadedProfiles:
             allProfile.append(lP)
-            
+
     return allProfile
 
 
@@ -100,6 +100,6 @@ def getGameTitleList():
     if not os.path.exists(filename):
         print('[ProfileManeger] Profiles are not found.')
 
-    titleList=glob.blob(filename)
+    titleList=glob.glob(filename)
 
     return titleList
