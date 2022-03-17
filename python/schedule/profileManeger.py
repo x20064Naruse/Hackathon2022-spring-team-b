@@ -4,6 +4,7 @@ import pandas
 import datetime
 import time
 import os.path
+import glob
 
 # プロファイル構造体
 @dataclass
@@ -77,3 +78,28 @@ def loadProfile(game_title):
     print('[ProfileManeger] Loaded from',filename)
 
     return loadedProfiles
+
+# 全プロファイル読込
+def loadProfileAll():
+    titleList=getGameTitleList()
+
+    allProfile=[]
+    for t in titleList:
+        filename=t+'.pkl'
+        loadedProfiles = pandas.read_pickle(filename)  # オブジェクト読出
+        print('[ProfileManeger] Loaded from',filename)
+        for lP in loadedProfiles:
+            allProfile.append(lP)
+            
+    return allProfile
+
+
+#保存したプロファイルのゲームタイトルリスト
+def getGameTitleList():
+    filename='*pkl'
+    if not os.path.exists(filename):
+        print('[ProfileManeger] Profiles are not found.')
+
+    titleList=glob.blob(filename)
+
+    return titleList
