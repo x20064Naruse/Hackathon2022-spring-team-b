@@ -1,4 +1,5 @@
 from __future__ import print_function
+import collections
 from dataclasses import dataclass
 import datetime
 import time
@@ -6,6 +7,8 @@ import os.path
 
 import profileManeger
 
+#チェック済みリスト
+CHECKED_TASK_LIST_=[]
 
 def updateTaskList(remaining_time, game_title):
 
@@ -45,3 +48,39 @@ def updateTaskList(remaining_time, game_title):
         print('!!予定が進行中です!!')
 
     return newTaskList
+
+#チェックしたタスクをチェック済みリストへ入れる
+def addToCheckedTaskList(profile):
+    CHECKED_TASK_LIST_.append(profile)
+
+#チェックを外したタスクをチェック済みリストから消す
+def removeFromCheckedTaskList(profile):
+    CHECKED_TASK_LIST_.remove(profile)
+
+#タスクリストからチェック済みリスト中の同名タスクのチェック数だけ減らし再提案
+def reduceCheckedTask(taskList):
+    countList=countCheckNum()
+    reducedTaskList=taskList
+    for t in taskList:
+        if not t.quantity<=0:
+            for k in countList.keys():
+                if t.task_name==k:
+                    for n in countList[k]:
+                        if t in reducedTaskList:
+                            reducedTaskList.remove(t)
+                
+    return reducedTaskList
+
+# チェック済みリスト中のタスク数計算
+def countCheckNum():
+    task_nameList=[]
+    for c in CHECKED_TASK_LIST_:
+        task_nameList.append(c.task_name)
+    countList=collections.Counter(task_nameList)
+    # countList=collections.Counter(CHECKED_TASK_LIST_)
+    # countList=[]
+    # for c in CHECKED_TASK_LIST_:
+    #     if not countList:
+    #         countList.append([c.task_name,])
+    #     if countList[][]!=c.task_name:
+    return countList

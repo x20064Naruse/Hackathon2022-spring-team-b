@@ -5,7 +5,6 @@ import os.path
 
 from getScheduledStartTime import getScheduledStartTime
 from profileManeger import loadProfile
-from profileManeger import optimizeProfile
 from taskListManeger import updateTaskList
 
 # スケジュール提案
