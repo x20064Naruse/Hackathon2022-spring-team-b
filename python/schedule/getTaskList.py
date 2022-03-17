@@ -26,6 +26,8 @@ def getTaskList(game_title):
     if remainSec > 0:
         print(datetime.timedelta(seconds=remainSec))
         remainTime = datetime.timedelta(seconds=remainSec)
+    else:
+        remainTime = "!!予定が進行中です!!"
 
     # # チェック入力
     # checkBoxListener = True

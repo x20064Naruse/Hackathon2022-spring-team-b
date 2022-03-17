@@ -21,6 +21,7 @@ user32 = ctypes.windll.user32
 # https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
 DWMWA_EXTENDED_FRAME_BOUNDS = 9
 
+
 # プロファイル構造体
 @dataclass
 class ProfileList:
@@ -30,17 +31,16 @@ class ProfileList:
     priority: int  # 優先度
     quantity: int  # 最大値
 
+# game_title = "Apex"
+# l=[]
+# l.append(ProfileList(game_title, "1Round", 30, 1, 0))
+# l.append(ProfileList(game_title, "DailyChallenge", 2, 3, 5))
+# l.append(ProfileList(game_title, "3V3", 10, 2, 0))
+# l.append(ProfileList(game_title, "WeeklyChallenge", 10, 4, 11))
+# profileManeger.saveProfile(l,game_title)
 class Window(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # テスト----------------------------------------------
-        # game_title = "Apex"
-        # l=[]
-        # l.append(ProfileList(game_title, "1Round", 30, 1, 0))
-        # l.append(ProfileList(game_title, "DailyChallenge", 2, 3, 5))
-        # l.append(ProfileList(game_title, "3V3", 10, 2, 0))
-        # l.append(ProfileList(game_title, "WeeklyChallenge", 10, 4, 11))
-        # profileManeger.saveProfile(l,game_title)
         #ウィンドウ背景の透明化オプション
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         #タスクバーに表示されない/タイトルバーの削除/常に画面の前面にある
@@ -123,8 +123,8 @@ class Window(QtWidgets.QWidget):
         self.centralwidgetLayout.setContentsMargins(0, 15, 0, 0)
         self.centralwidgetLayout.addLayout(self.clockBox, 2)
         self.centralwidgetLayout.addLayout(self.timerBox, 1)
-        self.centralwidgetLayout.addLayout(self.scrollBox, 4)
-        self.centralwidgetLayout.addLayout(self.openBox, 13)
+        self.centralwidgetLayout.addLayout(self.scrollBox, 13)
+        self.centralwidgetLayout.addLayout(self.openBox, 1)
         self.setLayout(self.centralwidgetLayout)
 
     def valueChangedCallback(self, value):
@@ -419,9 +419,9 @@ class SubWindow:
                     priorityedit = text
                 elif b == 3:
                     quantityedit = text
-            l.append(ProfileList(self.titleEdit.text(), taskedit, timeredit, priorityedit, quantityedit))
+            l.append(ProfileList(self.titleEdit.text(), taskedit, int(timeredit), int(priorityedit), int(quantityedit)))
 
-        profileManeger.saveProfile(l,self.titleEdit)
+        profileManeger.saveProfile(l,self.titleEdit.text())
 
     def show(self):
         self.w.exec_()
