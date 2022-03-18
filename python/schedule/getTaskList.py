@@ -24,7 +24,7 @@ def getTaskList(game_title):
     
     # print(remainSec, 'seconds left')
     if remainSec > 0:
-        print(datetime.timedelta(seconds=remainSec))
+        # print(datetime.timedelta(seconds=remainSec))
         remainTime = datetime.timedelta(seconds=remainSec)
     else:
         remainTime = "!!予定が進行中です!!"
