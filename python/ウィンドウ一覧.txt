@@ -1,40 +1,26 @@
+CiceroUIWndFrame
+
+
 バッテリ メーター
 
 Network Flyout
 
 
+getwindowname.py - Hackathon2022-spring-team-b - Visual Studio Code      
+masterduel
+linemediaplayer
+linemediaplayer
 
 
 
 
 
-CiceroUIWndFrame
-Microsoft Teams 通知
 
 
 
-
-
-
-Windows PowerShell
-
-Pythonを使って指定したWindowのハンドルを取得したい - Google Chrome
-main.py - Hackathon2022-spring-team-b - Visual Studio Code
-Apex Legends
-タスク マネージャー
-DXGIWatchdogThreadWindow
-
-
-スクリーンショットアップローダー
-
-
-
-
-WUIconWindow
-
-設定
-設定
-
+LINE
+QTrayIconMessageWindow
+team_b - Discord
 
 
 Code
@@ -43,15 +29,66 @@ Code
 
 
 
-100% 完了
-GDI+ Window (Explorer.EXE)
+
+
+
+
+
+
+
+Hackathon2022-spring-team-b
+ハッカソンメモ - HackMD - Google Chrome
+
+GitHub Desktop
+
+
+
+
+
+
+(89) Guiano - 舞 feat. 理芽 [MV] - YouTube - Google Chrome
+
+Slack | シス研ハッカソン2022春_全体連絡 | aitsysken
+
+設定
+設定
+Visual Studio Installer
+CiceroUIWndFrame
+
+MediaContextNotificationWindow
+GDI+ Window (setup.exe)
+SystemResourceNotifyWindow
+.NET-BroadcastEventWindow.4.0.0.0.3d90434.0
+
+ファイルの置換またはスキップ
+
+
+
+
+
+Microsoft Teams 通知
+CiceroUIWndFrame
+Window
+
+
+
+
+
+
 
 iTunes
+
+
+
+
 WinAMRestoreWnd
 iTunes
 DDE Server Window
 GDI+ Window (iTunes.exe)
-Task Host Window
+
+
+スクリーンショットアップローダー
+GDI+ Window (Explorer.EXE)
 
 JavaUpdate SysTray Icon
 
@@ -64,59 +101,25 @@ JavaUpdate SysTray Icon
 
 
 
+Microsoft Text Input Application
+OneDrive - 個人用
+
 GDI+ Window (IAStorIcon.exe)
 .NET-BroadcastEventWindow.4.0.0.0.141b42a.0
+Realtek HD Audio CPL for Vista
+GDI+ Window (RAVCpl64.exe)
 
 
 Razer Synapse
 Hidden Window
 GDI+ Window (Razer Synapse 3.exe)
-.NET-BroadcastEventWindow.4.0.0.0.277807.0
-MediaContextNotificationWindow
-SystemResourceNotifyWindow
-Realtek HD Audio CPL for Vista
-GDI+ Window (RAVCpl64.exe)
 wndProcClass
+.NET-BroadcastEventWindow.4.0.0.0.321b0cd.0
 Rtc Video PnP Listener
-
-
-Microsoft Text Input Application
-
-Slack | * mahjong | aitsysken
-
-
-
-
-
-
-
-
-
-DDE Server Window
-Teams
-
-
-
-
-
-
-
-
+MediaContextNotificationWindow
 
 
 SystemResourceNotifyWindow
-
-
-GDI+ Window (Razer Central.exe)
-
-CiceroUIWndFrame
-.NET-BroadcastEventWindow.4.0.0.0.286424b.0
-MediaContextNotificationWindow
-
-Window
-
-
-
 
 
 
@@ -155,13 +158,43 @@ Window
 
 
 
+
+
+
+
+
+
 Steam
+
 
 
 フレンド
 
 
 
+
+
+
+
+
+
+DDE Server Window
+Teams
+
+
+
+
+
+
+
+
+
+
+
+GDI+ Window (Razer Central.exe)
+
+CiceroUIWndFrame
+.NET-BroadcastEventWindow.4.0.0.0.286424b.0
 SystemTray
 
 
@@ -169,7 +202,18 @@ SystemTray
 
 
 
-OneDrive - 個人用
+MediaContextNotificationWindow
+
+
+
+
+SystemResourceNotifyWindow
+
+
+
+
+
+
 
 DDE Server Window
 
@@ -178,6 +222,14 @@ DDE Server Window
 
 
 SecurityHealthSystray
+BluetoothNotificationAreaIconWindowClass
+MS_WebcheckMonitor
+
+
+
+
+
+DDE Server Window
 
 
 
@@ -185,7 +237,8 @@ SecurityHealthSystray
 
 
 
-UxdService
+
+
 
 NVIDIA GeForce Overlay DT
 
@@ -193,54 +246,38 @@ NVIDIA GeForce Overlay
 
 
 
-MS_WebcheckMonitor
-
-
-BluetoothNotificationAreaIconWindowClass
-
-
-DDE Server Window
+NVIDIA NodeJS Share Window
 {1274D398-C3C8-422E-87DD-2FAFFD5A7F2F}
 {2A335767-FC94-417F-ABC4-B4122ADBEE60}
-
 NVEncCapContext
-
-
-
-
-
-
-
-
-
-
-
-NVIDIA NodeJS Share Window
 {5AEA657D-F3F5-4BD8-BFE9-A4B537FA24C3}
+
+
+NvSvc
+UxdService
+
 
 .NET-BroadcastEventWindow.4.0.0.0.2eed1ca.0
 
 
+
+
+
 GDI+ Window (Razer Synapse Service Process.exe)
-NvSvc
-
-
 BroadcastListenerWindow
-BroadcastListenerWindow
-BroadcastListenerWindow
-
-
 Windows Push Notifications Platform
-NvContainerWindowClass00001B48
-NvContainerWindowClass00001B28
+BroadcastListenerWindow
+BroadcastListenerWindow
 Task Host Window
+NvContainerWindowClass000007C0
+NvContainerWindowClass00001520
+NvContainerWindowClass00000D04
+DWM Notification Window
 RxDiag Message Pump 2.1 Nov 23 2021 07:27:35
 
-NvContainerWindowClass00000A58
-DWM Notification Window
 
 Microsoft Teams
-team_b - Discord
+
 
 
 Program Manager
@@ -252,24 +289,19 @@ Default IME
 Default IME
 MSCTFIME UI
 Default IME
-MSCTFIME UI
 Default IME
 MSCTFIME UI
-Default IME
 MSCTFIME UI
-Default IME
-MSCTFIME UI
-Default IME
 MSCTFIME UI
 Default IME
 Default IME
 MSCTFIME UI
 Default IME
+MSCTFIME UI
 Default IME
+MSCTFIME UI
 Default IME
-Default IME
-Default IME
-Default IME
+MSCTFIME UI
 Default IME
 Default IME
 Default IME
@@ -277,37 +309,25 @@ Default IME
 MSCTFIME UI
 Default IME
 Default IME
+MSCTFIME UI
+Default IME
+MSCTFIME UI
+Default IME
+MSCTFIME UI
+Default IME
+Default IME
 Default IME
 MSCTFIME UI
 Default IME
 Default IME
 Default IME
 Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
-Default IME
+MSCTFIME UI
 Default IME
 Default IME
 MSCTFIME UI
 Default IME
+MSCTFIME UI
 Default IME
 Default IME
 MSCTFIME UI
@@ -336,6 +356,32 @@ Default IME
 Default IME
 Default IME
 Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+MSCTFIME UI
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
 MSCTFIME UI
 Default IME
 Default IME
@@ -348,7 +394,14 @@ Default IME
 Default IME
 MSCTFIME UI
 Default IME
-MSCTFIME UI
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
+Default IME
 Default IME
 MSCTFIME UI
+Default IME
 Default IME
